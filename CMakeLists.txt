@@ -9,6 +9,9 @@ arieo_engine_project(
 
     PACKAGES
         Arieo-Core
+        Arieo-Interface-Window
+    INTERFACES
+        Arieo-Interface-Window::arieo_window_interface
     PRIVATE_LIBS
         Arieo-Core::arieo_core
     
