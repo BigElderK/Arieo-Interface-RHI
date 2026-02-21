@@ -1,10 +1,15 @@
 cmake_minimum_required (VERSION 3.31)
 
 include($ENV{ARIEO_BUILD_ENV_PACKAGES_OUTPUT_DIR}/cmake/build_environment.cmake)
-project(ArieoEngine)
 
-arieo_engine_project(
+ARIEO_PACKAGE(
+    Arieo-Interface-RHI
+    CATEGORY 02_engine
+)
+
+ARIEO_ENGINE_PROJECT(
     arieo_rhi_interface
+
     PROJECT_TYPE interface
 
     DEPENDENCIES
@@ -23,16 +28,19 @@ arieo_engine_project(
         ROOT_NAMESPACE Arieo::Interface::RHI
         SCRIPT_PACKAGE_NAME arieo:rhi
 
+        GENERATE_ROOT_FOLDER
+            $ENV{ARIEO_PACKAGES_BUILD_OUTPUT_DIR}/${ARIEO_PACKAGE_CATEGORY}/${ARIEO_PACKAGE_NAME}/${ARIEO_BUILD_CONFIGURE_PRESET}/interface
+
         AST_GENERATE_FOLDER
-            ${CMAKE_CURRENT_LIST_DIR}/_generated/ast
+            ${GENERATE_ROOT_FOLDER}/ast
         NATIVE_CODE_GENERATE_FOLDER
-            ${CMAKE_CURRENT_LIST_DIR}/_generated/native
+            ${GENERATE_ROOT_FOLDER}/native
         WASM_WIT_GENERATE_FOLDER
-            ${CMAKE_CURRENT_LIST_DIR}/_generated/wasm/wit
+            ${GENERATE_ROOT_FOLDER}/wasm/wit
         WASM_CXX_SCRIPT_GENERATE_FOLDER
-            ${CMAKE_CURRENT_LIST_DIR}/_generated/wasm/cxx
+            ${GENERATE_ROOT_FOLDER}/wasm/cxx
         WASM_CSHARP_SCRIPT_GENERATE_FOLDER
-            ${CMAKE_CURRENT_LIST_DIR}/_generated/wasm/csharp
+            ${GENERATE_ROOT_FOLDER}/wasm/csharp
         WASM_RUST_SCRIPT_GENERATE_FOLDER
-            ${CMAKE_CURRENT_LIST_DIR}/_generated/wasm/rust
+            ${GENERATE_ROOT_FOLDER}/wasm/rust
 )
