@@ -167,7 +167,7 @@ namespace Arieo::Interface::RHI
         virtual Base::Interface<IImage> createImage(std::uint32_t width, std::uint32_t height, Format format, ImageAspectFlags aspect, ImageTiling tiling, ImageUsageFlags usage, MemoryUsage memory_usage) = 0;
         virtual void destroyImage(Base::Interface<IImage>) = 0;
 
-        virtual Base::Interface<IFramebuffer> createFramebuffer(Base::Interface<IPipeline>, Base::Interface<ISwapchain>, const std::vector<Base::Interface<IImageView>>& attachment_array) = 0;
+        virtual Base::Interface<IFramebuffer> createFramebuffer(Base::Interface<IPipeline>, Base::Interface<ISwapchain>, std::vector<Base::Interface<IImageView>>& attachment_array) = 0;
         virtual void destroyFramebuffer(Base::Interface<IFramebuffer>) = 0;
 
         virtual Base::Interface<IShader> createShader(void* buf, size_t buf_size) = 0;
