@@ -20,18 +20,18 @@ namespace Arieo::Interface::RHI
     class IRenderSurface
     {
     public:
-        virtual Interface::Window::IWindow* getAttachedWindow() = 0;
+        virtual Base::Interface<Interface::Window::IWindow> getAttachedWindow() = 0;
     };
 
     class IRenderInstance
     {
     public:
         virtual std::vector<std::string>& getHardwareInfomations() = 0;
-        virtual IRenderSurface* createSurface(Interface::Window::IWindow* window) = 0;
-        virtual void destroySurface(IRenderSurface*) = 0;
+        virtual Base::Interface<IRenderSurface> createSurface(Base::Interface<Interface::Window::IWindow> window) = 0;
+        virtual void destroySurface(Base::Interface<IRenderSurface> surface) = 0;
 
-        virtual IRenderDevice* createDevice(size_t hardware_index, IRenderSurface* surface) = 0;
-        virtual void destroyDevice(IRenderDevice*) = 0;
+        virtual Base::Interface<IRenderDevice> createDevice(size_t hardware_index, Base::Interface<IRenderSurface> surface) = 0;
+        virtual void destroyDevice(Base::Interface<IRenderDevice> device) = 0;
     };
 
     class IFramebuffer
@@ -65,8 +65,8 @@ namespace Arieo::Interface::RHI
     {
     public:
         virtual Base::Math::Rect<size_t>& getExtent() = 0;
-        virtual std::vector<IImageView*>& getImageViews() = 0;
-        virtual std::uint32_t acquireNextImageIndex(ISemaphore*) = 0;
+        virtual std::vector<Base::Interface<IImageView>>& getImageViews() = 0;
+        virtual std::uint32_t acquireNextImageIndex(Base::Interface<ISemaphore>) = 0;
         virtual bool isLost() = 0;
     };
 
@@ -74,8 +74,8 @@ namespace Arieo::Interface::RHI
     {
     public:
         virtual size_t getMemorySize() = 0;
-        virtual IImageView* getImageView() = 0;
-        virtual IImageSampler* getImageSampler() = 0;
+        virtual Base::Interface<IImageView> getImageView() = 0;
+        virtual Base::Interface<IImageSampler> getImageSampler() = 0;
     };
 
     class IShader
@@ -86,15 +86,15 @@ namespace Arieo::Interface::RHI
     class IDescriptorSet
     {
     public:
-        virtual void bindBuffer(size_t bind_index, IBuffer*, size_t offset, size_t size) = 0;
-        virtual void bindImage(size_t bind_index, IImage*) = 0;
+        virtual void bindBuffer(size_t bind_index, Base::Interface<IBuffer>, size_t offset, size_t size) = 0;
+        virtual void bindImage(size_t bind_index, Base::Interface<IImage>) = 0;
     };
 
     class IDescriptorPool
     {
     public:
-        virtual IDescriptorSet* allocateDescriptorSet(IPipeline* pipeline) = 0;
-        virtual void freeDescriptorSet(IDescriptorSet*) = 0;
+        virtual Base::Interface<IDescriptorSet> allocateDescriptorSet(Base::Interface<IPipeline> pipeline) = 0;
+        virtual void freeDescriptorSet(Base::Interface<IDescriptorSet>) = 0;
     };
 
         class ICommandBuffer
@@ -105,36 +105,36 @@ namespace Arieo::Interface::RHI
         virtual void begin() = 0;
         virtual void end() = 0;
 
-        virtual void beginRenderPass(IPipeline*, IFramebuffer*) = 0;
+        virtual void beginRenderPass(Base::Interface<IPipeline>, Base::Interface<IFramebuffer>) = 0;
         virtual void endRenderPass() = 0;
 
-        virtual void bindVertexBuffer(IBuffer*, uint32_t offset) = 0;
-        virtual void bindIndexBuffer(IBuffer*, uint32_t offset) = 0;
+        virtual void bindVertexBuffer(Base::Interface<IBuffer>, uint32_t offset) = 0;
+        virtual void bindIndexBuffer(Base::Interface<IBuffer>, uint32_t offset) = 0;
 
-        virtual void bindPipeline(IPipeline*) = 0;
+        virtual void bindPipeline(Base::Interface<IPipeline>) = 0;
 
         virtual void draw(std::uint32_t vertex_count, std::uint32_t instance_count, std::uint32_t first_vertex, std::uint32_t first_instance) = 0;
         virtual void drawIndexed(uint32_t index_count, uint32_t instance_count, uint32_t first_index, int32_t vertex_offset, uint32_t first_instance) = 0;
 
-        virtual void bindDescriptorSets(IPipeline*, IDescriptorSet*) = 0;
+        virtual void bindDescriptorSets(Base::Interface<IPipeline>, Base::Interface<IDescriptorSet>) = 0;
 
-        virtual void copyBuffer(IBuffer*, IBuffer*, std::uint32_t) = 0;
-        virtual void copyBufferToImage(IBuffer*, IImage*) = 0;
-        virtual void prepareDepthImage(IImage* depth_image) = 0;
+        virtual void copyBuffer(Base::Interface<IBuffer>, Base::Interface<IBuffer>, std::uint32_t) = 0;
+        virtual void copyBufferToImage(Base::Interface<IBuffer>, Base::Interface<IImage>) = 0;
+        virtual void prepareDepthImage(Base::Interface<IImage> depth_image) = 0;
     };
 
     class ICommandPool
     {
     public:
-        virtual ICommandBuffer* allocateCommandBuffer() = 0;
-        virtual void freeCommandBuffer(ICommandBuffer*) = 0;
+        virtual Base::Interface<ICommandBuffer> allocateCommandBuffer() = 0;
+        virtual void freeCommandBuffer(Base::Interface<ICommandBuffer>) = 0;
     };
 
     class ICommandQueue
     {
     public:
-        virtual ICommandPool* createCommandPool() = 0;
-        virtual void destroyCommandPool(ICommandPool*) = 0;
+        virtual Base::Interface<ICommandPool> createCommandPool() = 0;
+        virtual void destroyCommandPool(Base::Interface<ICommandPool>) = 0;
         virtual void waitIdle() = 0;
     };
 
@@ -142,15 +142,15 @@ namespace Arieo::Interface::RHI
         : public ICommandQueue
     {
     public:
-        virtual void submitCommand(ICommandBuffer*, IFence*, ISemaphore* wait_semaphore, ISemaphore* signal_semaphore) = 0;
-        virtual void submitCommand(ICommandBuffer*) = 0;
+        virtual void submitCommand(Base::Interface<ICommandBuffer>, Base::Interface<IFence>, Base::Interface<ISemaphore> wait_semaphore, Base::Interface<ISemaphore> signal_semaphore) = 0;
+        virtual void submitCommand(Base::Interface<ICommandBuffer>) = 0;
     };
 
     class IPresentCommandQueue
         : public ICommandQueue
     {
     public:
-        virtual void present(ISwapchain*, std::uint32_t swapchain_image_index, IFramebuffer*, ISemaphore* signal_semaphore) = 0;
+        virtual void present(Base::Interface<ISwapchain>, std::uint32_t swapchain_image_index, Base::Interface<IFramebuffer>, Base::Interface<ISemaphore> signal_semaphore) = 0;
     };
 
     class IRenderDevice
@@ -158,36 +158,36 @@ namespace Arieo::Interface::RHI
     public:
         virtual Format findSupportedFormat(const std::vector<Format>& candidate_formats, ImageTiling, FormatFeatureFlags) = 0;
 
-        virtual IRenderCommandQueue* getGraphicsCommandQueue() = 0;
-        virtual IPresentCommandQueue* getPresentCommandQueue() = 0;
+        virtual Base::Interface<IRenderCommandQueue> getGraphicsCommandQueue() = 0;
+        virtual Base::Interface<IPresentCommandQueue> getPresentCommandQueue() = 0;
 
-        virtual ISwapchain* createSwapchain(IRenderSurface*) = 0;
-        virtual void destroySwapchain(ISwapchain*) = 0;
+        virtual Base::Interface<ISwapchain> createSwapchain(Base::Interface<IRenderSurface>) = 0;
+        virtual void destroySwapchain(Base::Interface<ISwapchain>) = 0;
 
-        virtual IImage* createImage(std::uint32_t width, std::uint32_t height, Format format, ImageAspectFlags aspect, ImageTiling tiling, ImageUsageFlags usage, MemoryUsage memory_usage) = 0;
-        virtual void destroyImage(IImage*) = 0;
+        virtual Base::Interface<IImage> createImage(std::uint32_t width, std::uint32_t height, Format format, ImageAspectFlags aspect, ImageTiling tiling, ImageUsageFlags usage, MemoryUsage memory_usage) = 0;
+        virtual void destroyImage(Base::Interface<IImage>) = 0;
 
-        virtual IFramebuffer* createFramebuffer(IPipeline*, ISwapchain*, const std::vector<IImageView*>& attachment_array) = 0;
-        virtual void destroyFramebuffer(IFramebuffer*) = 0;
+        virtual Base::Interface<IFramebuffer> createFramebuffer(Base::Interface<IPipeline>, Base::Interface<ISwapchain>, const std::vector<Base::Interface<IImageView>>& attachment_array) = 0;
+        virtual void destroyFramebuffer(Base::Interface<IFramebuffer>) = 0;
 
-        virtual IShader* createShader(void* buf, size_t buf_size) = 0;
-        virtual void destroyShader(IShader*) = 0; 
+        virtual Base::Interface<IShader> createShader(void* buf, size_t buf_size) = 0;
+        virtual void destroyShader(Base::Interface<IShader>) = 0; 
 
         //TODO: remove target_image_view from here
-        virtual IPipeline* createPipeline(IShader* vert_shader, IShader* frag_shader, IImageView* target_color_attachment, IImageView* target_dept_attachment) = 0;
-        virtual void destroyPipeline(IPipeline*) = 0;
+        virtual Base::Interface<IPipeline> createPipeline(Base::Interface<IShader> vert_shader, Base::Interface<IShader> frag_shader, Base::Interface<IImageView> target_color_attachment, Base::Interface<IImageView> target_dept_attachment) = 0;
+        virtual void destroyPipeline(Base::Interface<IPipeline>) = 0;
 
-        virtual IFence* createFence() = 0;
-        virtual void destroyFence(IFence*) = 0;
+        virtual Base::Interface<IFence> createFence() = 0;
+        virtual void destroyFence(Base::Interface<IFence>) = 0;
 
-        virtual ISemaphore* createSemaphore() = 0;
-        virtual void destroySemaphore(ISemaphore*) = 0;
+        virtual Base::Interface<ISemaphore> createSemaphore() = 0;
+        virtual void destroySemaphore(Base::Interface<ISemaphore>) = 0;
 
-        virtual IBuffer* createBuffer(size_t size, BufferUsageBitFlags buffer_usage, BufferAllocationFlags allocation_flag, MemoryUsage memory_usage) = 0;
-        virtual void destroyBuffer(IBuffer*) = 0;
+        virtual Base::Interface<IBuffer> createBuffer(size_t size, BufferUsageBitFlags buffer_usage, BufferAllocationFlags allocation_flag, MemoryUsage memory_usage) = 0;
+        virtual void destroyBuffer(Base::Interface<IBuffer>) = 0;
 
-        virtual IDescriptorPool* createDescriptorPool(size_t capacity) = 0;
-        virtual void destroyDescriptorPool(IDescriptorPool*) = 0;
+        virtual Base::Interface<IDescriptorPool> createDescriptorPool(size_t capacity) = 0;
+        virtual void destroyDescriptorPool(Base::Interface<IDescriptorPool>) = 0;
 
         virtual void waitIdle() = 0;
     };
